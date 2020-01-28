@@ -29,11 +29,17 @@ class Tracker {
         bool enableGPRS();
 
     private:
+        // Hardware access properties
         Adafruit_FONA *fona;    
         SoftwareSerial *fonaSerial;
-        int fonaReady = 0;
-        int lastErrorCode = 0;
-        String lastErrorMessage = "";
+        
+        // Status properties
+        int fonaReady;
+        int lastErrorCode;
+        String lastErrorMessage;
+
+        // GPS properties
+        float latitude, longitude, speed_kph, heading, speed_mph, altitude;
 };
 
 

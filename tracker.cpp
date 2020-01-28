@@ -12,6 +12,12 @@ Tracker::Tracker() {
     this->lastErrorMessage = "";
     this->fonaReady = 0;
     this->fona = new Adafruit_FONA(FONA_RST);
+    this->latitude = 0;
+    this->longitude = 0;
+    this->speed_kph = 0;
+    this->speed_mph = 0;
+    this->heading = 0;
+    this->altitude = 0;
 
     // Establishes the serial communication to the FONA device
     this->fonaSerial = new SoftwareSerial(FONA_TX, FONA_RX);
@@ -31,8 +37,20 @@ Tracker::Tracker() {
 bool Tracker::enableGPS() {
     if (! this->fonaReady) {
         this->lastErrorCode = 1;
+        return 0;
     }
-    return 1;
+    if (! this->fona->enableGPS(true)) {
+        this->lastErrorCode = 2;
+        return 0;
+    }
+    if (this->fona->getGPS(&this->latitude, &this->longitude, &this->speed_kph, &this->heading, &this->altitude)) {
+        this->speed_mph = this->speed_kph * 0.621371192;
+        return 1;
+    }
+    else {
+        this->lastErrorMessage = 3;
+        return 0;
+    }
 }
 
 /************************************************************************************
@@ -60,7 +78,9 @@ String Tracker::errorMessage() {
     // reset error code
     switch (lastErrorCode) {
         case 0: this->lastErrorMessage = "Success!"; break;
-        case 1: this->lastErrorMessage = "FONA device is not ready"; break;
+        case 1: this->lastErrorMessage = "FONA device: not ready"; break;
+        case 2: this->lastErrorMessage = "GPS device: Failed to start GPS device"; break;
+        case 3: this->lastErrorMessage = "GPS device: could not get location information"; break;
     }
     this->lastErrorCode = 0;
     return this->lastErrorMessage;
