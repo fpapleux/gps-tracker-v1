@@ -3,6 +3,8 @@
 #include <SoftwareSerial.h>
 #include "./tracker.h"
 
+#define FONA_TRANSMISSION_SPEED 9600
+
 /************************************************************************************
  * CONSTRUCTOR: Initializes the device
  ***********************************************************************************/
@@ -21,7 +23,7 @@ Tracker::Tracker() {
 
     // Establishes the serial communication to the FONA device
     this->fonaSerial = new SoftwareSerial(FONA_TX, FONA_RX);
-    fonaSerial->begin(9600);
+    fonaSerial->begin(FONA_TRANSMISSION_SPEED);
     if (! fona->begin(*fonaSerial)) {
         this->lastErrorCode = 1;
     } 
@@ -43,12 +45,12 @@ bool Tracker::enableGPS() {
         this->lastErrorCode = 2;
         return 0;
     }
-    if (this->fona->getGPS(&this->latitude, &this->longitude, &this->speed_kph, &this->heading, &this->altitude)) {
+    if (this->fona->getGPS(&this->latitude, &this->longitude)) {
         this->speed_mph = this->speed_kph * 0.621371192;
         return 1;
     }
     else {
-        this->lastErrorMessage = 3;
+        this->lastErrorCode = 3;
         return 0;
     }
 }

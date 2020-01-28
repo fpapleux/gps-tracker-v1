@@ -7,7 +7,7 @@
 #include "./tracker.h"
 
 #define RETRY_DELAY 1 // minutes between retries
-#define REPORT_DELAY 0 // minutes to wait between to reports of GPS coordinates
+#define REPORT_DELAY 0.5 // minutes to wait between to reports of GPS coordinates
 
 Tracker *tracker;
 
