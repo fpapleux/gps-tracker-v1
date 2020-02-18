@@ -16,30 +16,34 @@
 #define FONA_RX 2
 #define FONA_TX 3
 #define FONA_RST 4
+#define FONA_TRANSMISSION_SPEED 9600
+#define POST_API_URL "https://d2kh72sh76.execute-api.us-east-1.amazonaws.com/v1/location"
+#define GET_API_URL "https://api.papleux.com/geolocation/v1/"
 
-class Tracker {
+class Tracker : public Adafruit_FONA {
 
     public:
         Tracker();
-
-        int error();
-        String errorMessage();
-
-        bool enableGPS();
-        bool enableGPRS();
+        ~Tracker();
+        int init();
+        
+        int getGeolocation();
+        
+        int getLastErrorCode();
+        String getLastErrorMessage();
+        int printStatus();
 
     private:
         // Hardware access properties
-        Adafruit_FONA *fona;    
         SoftwareSerial *fonaSerial;
         
         // Status properties
         int fonaReady;
         int lastErrorCode;
-        String lastErrorMessage;
 
-        // GPS properties
+        // Geolocation properties
         float latitude, longitude, speed_kph, heading, speed_mph, altitude;
+
 };
 
 
