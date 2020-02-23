@@ -13,8 +13,8 @@
     #define DEBUG_PRINTLN(...)      DebugStream.println(__VA_ARGS__)
 #endif
 
-#define RETRY_DELAY         2000            // default milliseconds between retries when operation fails
-#define RETRY_LOOPS         5               // default number of times a process should be retried before failing
+#define RETRY_DELAY         5000            // default milliseconds between retries when operation fails
+#define RETRY_LOOPS         5              // default number of times a process should be retried before failing
 #define LOOP_INTERVAL       10000           // default milliseconds between two sightings reports
 
 #define FONA_RX 2
@@ -105,13 +105,13 @@ void loop() {
         strcat(body, getGPS(14,28).c_str());
         strcat(body, "\",\n");
         // latitude
-        strcat(body, "\"latitude\": \"");
+        strcat(body, "\"latitude\": ");
         strcat(body, getLatitudeString().c_str());
-        strcat(body, "\",\n");
+        strcat(body, ",\n");
         // longitude
-        strcat(body, "\"longitude\": \"");
+        strcat(body, "\"longitude\": ");
         strcat(body, getLongitudeString().c_str());
-        strcat(body, "\"\n}\n}");
+        strcat(body, "\n}\n}");
         
         Serial.print (F("main: buffer written - length: "));
         Serial.println (strlen(body));
@@ -124,11 +124,18 @@ void loop() {
         if (fona.HTTP_POST_start(url, F("application/json"), body, strlen(body), &status, &datalen)) {
             delay(250);
             Serial.print(F("RETURN STATUS: ")); Serial.println(status);
+            delay(500);
+            Serial.println(F("RESPONSE:"));
+            Serial.println(fona.replybuffer);
+            // while (fona.available()) Serial.print((char) fona.read());
+
+            /*
             if (getResponse (body, datalen)) {
                 Serial.println(F("RESPONSE:"));
                 Serial.println(body);
                 success = 1;
             }
+            */
             fona.HTTP_POST_end ();
         }
         else Serial.println("Posting data failed");
@@ -353,6 +360,17 @@ int getResponse(char *buf, uint16_t maxlength) {
     return readSuccess;
 }
 
+int printResponse() {
+    uint16_t index = 0, iteration = 0;
+    const uint16_t maxIterations = 100000;
+    char c;
+    while (fonaSS.available()) {
+        c = fonaSS.read();
+        Serial.print(c);
+        index++;
+    }
+    return 1;
+}
 
 
 
